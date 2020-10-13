@@ -1,6 +1,6 @@
 {
   "name": "@ethiclab/crud-git",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A module for creating REST endpoints for git repositories used as data sources",
   "main": "src/index.js",
   "scripts": {
