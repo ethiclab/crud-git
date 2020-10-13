@@ -97,9 +97,11 @@
           },
           drop: async () => {
             // TODO
+            throw Error("Unsupported")
           },
           replaceOne: async (old, obj, optionsUpsertFalse) => {
             // TODO
+            throw Error("Unsupported")
           },
           find: async unusedMongooseApiCompat => {
             return {
@@ -131,7 +133,7 @@
               // create dir by default
               fs.mkdirSync(dbfile, { recursive: true})
             }
-            // understand if it is file or dir
+            // only folders are allowed
             const stats = fs.statSync(dbfile)
             if (stats.isDirectory()) {
               const ids = fs.readdirSync(dbfile).filter(x => {
