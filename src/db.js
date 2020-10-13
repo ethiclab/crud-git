@@ -14,6 +14,19 @@
       throw Error('invalid url', url)
     }
     await git.clone({ fs, http, dir, url: url })
+    const count = async (collectionName) => {
+      const coldir = path.join(dir, dbname, collectionName)
+      if (!fs.existsSync(coldir)) {
+        return null
+      }
+      const stats = fs.statSync(coldir)
+      if (stats.isDirectory()) {
+        const retval = {}
+        return fs.readdirSync(coldir).length
+      } else {
+        throw Error("Invalid file type.")
+      }
+    }
     const findOne = async (collectionName, obj) => {
       const objdir = path.join(dir, dbname, collectionName, obj._id)
       if (!fs.existsSync(objdir)) {
@@ -41,8 +54,7 @@
       collection: async collectionName => {
         return {
           countDocuments: async unused => {
-            // TODO
-            return 0
+            return await count(collectionName)
           },
           deleteOne: async obj => {
             // TODO

@@ -1,4 +1,5 @@
 const crud = require("../src/index");
+const assert = require("assert");
 (async () => {
   const controller = await crud({
     url: 'https://github.com/ethiclab/samplegitdb.git',
@@ -20,6 +21,8 @@ const crud = require("../src/index");
     },
     col: 'menus'
   })
+  const count1 = await controller.count()
+  console.log('count1 returned', count1)
   const x = await controller.create({
     name: 'string',
     number: 1,
@@ -36,4 +39,8 @@ const crud = require("../src/index");
   console.log('insert returned', x)
   const xx = await controller.read()
   console.log('read returned', xx)
+  const count2 = await controller.count()
+  console.log('count2 returned', count2)
+  assert.equal(xx.length, count2)  
+  assert.equal(count1 + 1, count2)  
 })()
