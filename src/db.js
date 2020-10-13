@@ -14,6 +14,28 @@
       throw Error('invalid url', url)
     }
     await git.clone({ fs, http, dir, url: url })
+
+    const commitAndPush = async (collectionName, message) => {
+      const sha = await git.commit({
+        fs,
+        dir,
+        message: message,
+        author: {
+          name: 'EthicLab Team',
+          email: 'tech@ethiclab.it'
+        }
+      })
+      let pushResult = await git.push({
+        fs,
+        http,
+        dir: dir,
+        remote: 'origin',
+        ref: 'main',
+        onAuth: () => ({ username: process.env.GITHUB_TOKEN })
+      })
+      console.log(pushResult)
+    }
+
     const count = async (collectionName) => {
       const coldir = path.join(dir, dbname, collectionName)
       if (!fs.existsSync(coldir)) {
@@ -27,6 +49,22 @@
         throw Error("Invalid file type.")
       }
     }
+
+    const deleteOne = async (collectionName, objId) => {
+      const objdir = path.join(dir, dbname, collectionName, `${objId}`)
+      if (!fs.existsSync(objdir)) {
+        return null
+      }
+      const stats = fs.statSync(objdir)
+      if (stats.isDirectory()) {
+        deltree(objdir)
+      } else {
+        throw Error("Invalid file type.")
+      }
+      await git.remove({fs, dir, filepath: path.join(dbname, collectionName, `${objId}`)})
+      await commitAndPush(collectionName, "deleted object")
+    }
+
     const findOne = async (collectionName, obj) => {
       const objdir = path.join(dir, dbname, collectionName, obj._id)
       if (!fs.existsSync(objdir)) {
@@ -56,8 +94,8 @@
           countDocuments: async unused => {
             return await count(collectionName)
           },
-          deleteOne: async obj => {
-            // TODO
+          deleteOne: async id => {
+            return await deleteOne(collectionName, id)
           },
           drop: async () => {
             // TODO
@@ -125,25 +163,8 @@
                   fs.writeFileSync(entryFile, value)
                 }
               })
-              await git.add({fs, dir, filepath: path.join(dbname, collectionName, id)})
-              const sha = await git.commit({
-                fs,
-                dir,
-                message: 'created object',
-                author: {
-                  name: 'EthicLab Team',
-                  email: 'tech@ethiclab.it'
-                }
-              })
-              let pushResult = await git.push({
-                fs,
-                http,
-                dir: dir,
-                remote: 'origin',
-                ref: 'main',
-                onAuth: () => ({ username: process.env.GITHUB_TOKEN })
-              })
-              console.log(pushResult)
+              await git.add({fs, dir, filepath: path.join(dbname, collectionName, `${obj._id}`)})
+              await commitAndPush(collectionName, "created object")
             } else {
               throw Error("Invalid file type.")
             }

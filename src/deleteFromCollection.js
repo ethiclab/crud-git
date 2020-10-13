@@ -2,7 +2,7 @@
   let f = async function(db, collectionName, id) {
     let collection = await db.collection(collectionName)
     if (id) {
-      await collection.deleteOne({ _id: id })
+      await collection.deleteOne(id)
     } else {
       await collection.drop()
     }
