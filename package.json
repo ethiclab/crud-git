@@ -27,6 +27,7 @@
     "mktemp": "^1.0.0"
   },
   "devDependencies": {
+    "assert": "^2.0.0",
     "express": "^4.17.1"
   }
 }
