@@ -9,7 +9,6 @@
   const fs = require('fs')
   let f = async function(url, dbname) {
     const dir = mktemp.createDirSync(`${os.tmpdir()}/XXXXXXXX`)
-    console.log('url', url)
     if (typeof url != 'string') {
       throw Error('invalid url', url)
     }
@@ -33,7 +32,6 @@
         ref: 'main',
         onAuth: () => ({ username: process.env.GITHUB_TOKEN })
       })
-      console.log(pushResult)
     }
 
     const count = async (collectionName) => {
